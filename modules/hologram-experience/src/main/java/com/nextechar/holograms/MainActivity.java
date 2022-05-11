@@ -1,4 +1,4 @@
-package com.google.ar.sceneform.samples.videotexture;
+package com.nextechar.holograms;
 
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -29,6 +29,8 @@ import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.BaseArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 import com.google.ar.sceneform.ux.VideoNode;
+
+import com.nextechar.holograms.R;
 
 import java.util.ArrayList;
 import java.util.List;

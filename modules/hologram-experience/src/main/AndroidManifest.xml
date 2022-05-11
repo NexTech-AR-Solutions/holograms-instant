@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     android:targetSandboxVersion="2"
-    package="com.google.ar.sceneform.samples.videotexture"
+    package="com.nextechar.holograms"
     xmlns:dist="http://schemas.android.com/apk/distribution">
 
     <!-- Always needed for AR. -->

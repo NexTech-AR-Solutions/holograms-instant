@@ -8,7 +8,7 @@ plugins {
 android {
     compileSdkVersion 31
     defaultConfig {
-        applicationId "com.google.ar.sceneform.samples.videotexture"
+        applicationId "com.nextechar.holograms"
 
         // Sceneform requires minSdkVersion >= 24.
         minSdkVersion rootProject.ext.minSdkVersion
