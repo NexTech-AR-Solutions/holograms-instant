@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -25,6 +26,7 @@ import com.google.ar.core.Plane;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.Sceneform;
 import com.google.ar.sceneform.rendering.Color;
+import com.google.ar.sceneform.rendering.PlaneRenderer;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.BaseArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
@@ -74,7 +76,13 @@ public class MainActivity extends AppCompatActivity implements
         String appLinkAction = appLinkIntent.getAction();
         Uri appLinkData = appLinkIntent.getData();
         try {
+            List<String> pathComponents = appLinkData.getPathSegments();
+            int componentCount = pathComponents.size();
+            String username = pathComponents.get(componentCount - 2);
+            username = username.substring(2);
+            Log.d("AppLink","username = " + username);
             String holoID = appLinkData.getLastPathSegment();
+            Log.d("AppLink","holoID = " + holoID);
             holoUri = Uri.parse("https://holograms-cdn.nextechar.com/" + holoID + "/processed-web.mp4");
         } catch (Exception e) {
             holoUri = Uri.parse("https://holograms-cdn.nextechar.com/8c6cc476-baf8-4d5e-8859-8328946b0b87/processed-web.mp4");
@@ -157,6 +165,7 @@ public class MainActivity extends AppCompatActivity implements
         player.setLooping(true);
         player.start();
         mediaPlayers.add(player);
+
         VideoNode videoNode = new VideoNode(this, player, chromaKeyColor, new VideoNode.Listener() {
             @Override
             public void onCreated(VideoNode videoNode) {
@@ -169,6 +178,10 @@ public class MainActivity extends AppCompatActivity implements
         });
         videoNode.setParent(modelNode);
         videoNode.setLocalScale(videoNode.getLocalScale().scaled(2.0f));
+
+        // Disable the plane renderer
+        PlaneRenderer planeRenderer = arFragment.getArSceneView().getPlaneRenderer();
+        planeRenderer.setEnabled(false);
 
         // If you want that the VideoNode is always looking to the
         // Camera (You) comment the next line out. Use it mainly
