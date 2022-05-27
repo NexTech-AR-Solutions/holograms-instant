@@ -45,7 +45,9 @@ public class MainActivity extends AppCompatActivity implements
     private ArFragment arFragment;
     private int mode = R.id.menuChromaKeyVideo;
 
+    private Color chromaKeyColor;
     private Uri holoUri;
+    private Boolean didPlaceHologram = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +73,9 @@ public class MainActivity extends AppCompatActivity implements
                         .commit();
             }
         }
+
+        chromaKeyColor = new Color(0.0f, 0.859f, 0.011f);
+
         // ATTENTION: This was auto-generated to handle app links.
         Intent appLinkIntent = getIntent();
         String appLinkAction = appLinkIntent.getAction();
@@ -142,6 +147,13 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
+        // Only allow one placement
+        if (didPlaceHologram) {
+            return;
+        } else {
+            didPlaceHologram = true;
+        }
+
         // Create the Anchor.
         Anchor anchor = hitResult.createAnchor();
         AnchorNode anchorNode = new AnchorNode(anchor);
@@ -151,15 +163,6 @@ public class MainActivity extends AppCompatActivity implements
         TransformableNode modelNode = new TransformableNode(arFragment.getTransformationSystem());
         modelNode.setParent(anchorNode);
 
-        final int rawResId;
-        final Color chromaKeyColor;
-        if (mode == R.id.menuPlainVideo) {
-            rawResId = R.raw.sintel;
-            chromaKeyColor = null;
-        } else {
-            rawResId = R.raw.lion;
-            chromaKeyColor = new Color(0.0f, 0.859f, 0.011f);
-        }
         Uri uri = holoUri; //Uri.parse( "https://holograms-cdn.nextechar.com/8c6cc476-baf8-4d5e-8859-8328946b0b87/processed-web.mp4" );
         MediaPlayer player = MediaPlayer.create(this, uri);
         player.setLooping(true);
