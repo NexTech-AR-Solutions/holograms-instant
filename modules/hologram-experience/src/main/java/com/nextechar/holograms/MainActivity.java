@@ -34,19 +34,23 @@ import com.google.ar.sceneform.ux.VideoNode;
 
 import com.nextechar.holograms.R;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
+        MediaPlayer.OnPreparedListener,
         FragmentOnAttachListener,
         BaseArFragment.OnTapArPlaneListener {
 
     private final List<MediaPlayer> mediaPlayers = new ArrayList<>();
+    private MediaPlayer holoPlayer;
     private ArFragment arFragment;
     private int mode = R.id.menuChromaKeyVideo;
 
     private Color chromaKeyColor;
     private Uri holoUri;
+    private Boolean canPlaceHologram = false;
     private Boolean didPlaceHologram = false;
 
     @Override
@@ -92,6 +96,14 @@ public class MainActivity extends AppCompatActivity implements
         } catch (Exception e) {
             holoUri = Uri.parse("https://holograms-cdn.nextechar.com/8c6cc476-baf8-4d5e-8859-8328946b0b87/processed-web.mp4");
         }
+        holoPlayer = new MediaPlayer();
+        try {
+            holoPlayer.setDataSource(getApplicationContext(), holoUri);
+            holoPlayer.setOnPreparedListener(this);
+            holoPlayer.prepareAsync();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -101,7 +113,6 @@ public class MainActivity extends AppCompatActivity implements
             arFragment.setOnTapArPlaneListener(this);
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -154,6 +165,12 @@ public class MainActivity extends AppCompatActivity implements
             didPlaceHologram = true;
         }
 
+        // Only allow placement after player has loaded
+        if (!canPlaceHologram)
+        {
+            return;
+        }
+
         // Create the Anchor.
         Anchor anchor = hitResult.createAnchor();
         AnchorNode anchorNode = new AnchorNode(anchor);
@@ -163,15 +180,13 @@ public class MainActivity extends AppCompatActivity implements
         TransformableNode modelNode = new TransformableNode(arFragment.getTransformationSystem());
         modelNode.setParent(anchorNode);
 
-        Uri uri = holoUri; //Uri.parse( "https://holograms-cdn.nextechar.com/8c6cc476-baf8-4d5e-8859-8328946b0b87/processed-web.mp4" );
-        MediaPlayer player = MediaPlayer.create(this, uri);
-        player.setLooping(true);
-        player.start();
-        mediaPlayers.add(player);
+        // Uncomment for looping
+        // holoPlayer.setLooping(true);
 
-        VideoNode videoNode = new VideoNode(this, player, chromaKeyColor, new VideoNode.Listener() {
+        VideoNode videoNode = new VideoNode(this, holoPlayer, chromaKeyColor, new VideoNode.Listener() {
             @Override
             public void onCreated(VideoNode videoNode) {
+                holoPlayer.start();
             }
 
             @Override
@@ -193,5 +208,10 @@ public class MainActivity extends AppCompatActivity implements
         //videoNode.setRotateAlwaysToCamera(true);
 
         modelNode.select();
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+        canPlaceHologram = true;
     }
 }
