@@ -73,6 +73,10 @@ public class PlaneRenderer {
     private PlaneRendererMode planeRendererMode = PlaneRendererMode.RENDER_ALL;
     // Distance from the camera to last plane hit, default value is 4 meters (standing height).
     private float lastPlaneHitDistance = 4.0f;
+    private HitResult lastHitResult;
+
+    @Nullable
+    private PlaneRendererListener planeRendererListener;
 
     /**
      * @hide PlaneRenderer is constructed in a different package, but not part of external API.
@@ -198,6 +202,7 @@ public class PlaneRenderer {
         // a focusPoint and to render the top most plane Trackable if
         // planeRendererMode is set to RENDER_TOP_MOST.
         HitResult hitResult = getHitResult(frame, viewWidth, viewHeight);
+        lastHitResult = hitResult;
         // Calculate the focusPoint. It is used to determine the position of
         // the visualized grid.
         Vector3 focusPoint = getFocusPoint(frame, hitResult);
@@ -220,6 +225,13 @@ public class PlaneRenderer {
 
         // Check for not tracking Plane-Trackables and remove them.
         cleanupOldPlaneVisualizer();
+
+        // Notify Listener
+        if (planeRendererListener != null)
+        {
+            planeRendererListener.onPlaneRendererUpdate(this);
+        }
+
     }
 
     /**
@@ -403,6 +415,20 @@ public class PlaneRenderer {
 
     /**
      * <pre>
+     *    Returns the most recent result of ray-casting from the center of the Frame.
+     *    The result is a {@link HitResult} with information
+     *    about the hit position as a {@link Pose} and the trackable which got hit.
+     * </pre>
+     *
+     */
+    @Nullable
+    public HitResult getLastHitResult()
+    {
+        return lastHitResult;
+    }
+
+    /**
+     * <pre>
      *     Calculate the FocusPoint based on a {@link HitResult} on the current {@link Frame}.
      *     The FocusPoint is used to determine the position of the visualized plane.
      *     If the {@link HitResult} is null, we use the last known distance of the camera to
@@ -448,4 +474,13 @@ public class PlaneRenderer {
          */
         RENDER_TOP_MOST
     }
+
+    public void setPlaneRendererListener(@Nullable PlaneRendererListener planeRendererListener) {
+        this.planeRendererListener = planeRendererListener;
+    }
+
+    public interface PlaneRendererListener {
+        public void onPlaneRendererUpdate(PlaneRenderer planeRenderer);
+    }
+
 }

@@ -21,9 +21,11 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentOnAttachListener;
 
 import com.google.ar.core.Anchor;
+import com.google.ar.core.Frame;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
 import com.google.ar.sceneform.AnchorNode;
+import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.Sceneform;
 import com.google.ar.sceneform.rendering.Color;
 import com.google.ar.sceneform.rendering.PlaneRenderer;
@@ -40,8 +42,10 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
         MediaPlayer.OnPreparedListener,
+        PlaneRenderer.PlaneRendererListener,
         FragmentOnAttachListener,
-        BaseArFragment.OnTapArPlaneListener {
+        BaseArFragment.OnTapArPlaneListener,
+        ArFragment.OnViewCreatedListener {
 
     private final List<MediaPlayer> mediaPlayers = new ArrayList<>();
     private MediaPlayer holoPlayer;
@@ -111,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements
         if (fragment.getId() == R.id.arFragment) {
             arFragment = (ArFragment) fragment;
             arFragment.setOnTapArPlaneListener(this);
+            arFragment.setOnViewCreatedListener(this);
         }
     }
 
@@ -171,8 +176,83 @@ public class MainActivity extends AppCompatActivity implements
             return;
         }
 
+        holoPlayer.start();
+
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+        canPlaceHologram = true;
+    }
+
+    @Override
+    public void onPlaneRendererUpdate(PlaneRenderer planeRenderer) {
+        // Get the plane renderer focus point
+        //PlaneRenderer planeRenderer = arFragment.getArSceneView().getPlaneRenderer();
+        HitResult focus = planeRenderer.getLastHitResult();
+
+        // Place the hologram if we haven't already
+        if (!didPlaceHologram && (focus != null))
+        {
+            placeHologram(focus);
+            didPlaceHologram = true;
+        }
+        // Otherwise, move the anchor to follow focus
+
+    }
+
+    public void placeHologram(HitResult focus)
+    {
         // Create the Anchor.
-        Anchor anchor = hitResult.createAnchor();
+        Anchor anchor = focus.createAnchor();
+        AnchorNode anchorNode = new AnchorNode(anchor);
+        anchorNode.setParent(arFragment.getArSceneView().getScene());
+
+        // Create the transformable model and add it to the anchor.
+        TransformableNode modelNode = new TransformableNode(arFragment.getTransformationSystem());
+        modelNode.setParent(anchorNode);
+
+        // Uncomment for looping
+        // holoPlayer.setLooping(true);
+
+        VideoNode videoNode = new VideoNode(this, holoPlayer, chromaKeyColor, new VideoNode.Listener() {
+            @Override
+            public void onCreated(VideoNode videoNode) {
+                //holoPlayer.start();
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                Toast.makeText(MainActivity.this, "Unable to load material", Toast.LENGTH_LONG).show();
+            }
+        });
+        videoNode.setParent(modelNode);
+        videoNode.setLocalScale(videoNode.getLocalScale().scaled(2.0f));
+
+        // If you want that the VideoNode is always looking to the
+        // Camera (You) comment the next line out. Use it mainly
+        // if you want to display a Video. The use with activated
+        // ChromaKey might look odd.
+        //videoNode.setRotateAlwaysToCamera(true);
+
+        // Disable the plane renderer
+        PlaneRenderer planeRenderer = arFragment.getArSceneView().getPlaneRenderer();
+        planeRenderer.setEnabled(false);
+
+        modelNode.select();
+        holoPlayer.start();
+    }
+
+    @Override
+    public void onViewCreated(ArSceneView arSceneView) {
+        PlaneRenderer planeRenderer = arFragment.getArSceneView().getPlaneRenderer();
+        planeRenderer.setPlaneRendererListener(this);
+    }
+
+    private void debugAnchorPlacement(HitResult position)
+    {
+        // Create the Anchor.
+        Anchor anchor = position.createAnchor();
         AnchorNode anchorNode = new AnchorNode(anchor);
         anchorNode.setParent(arFragment.getArSceneView().getScene());
 
@@ -208,10 +288,5 @@ public class MainActivity extends AppCompatActivity implements
         //videoNode.setRotateAlwaysToCamera(true);
 
         modelNode.select();
-    }
-
-    @Override
-    public void onPrepared(MediaPlayer mp) {
-        canPlaceHologram = true;
     }
 }
