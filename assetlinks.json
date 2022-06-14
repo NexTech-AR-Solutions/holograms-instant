@@ -1,0 +1,9 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.nextechar.holograms",
+    "sha256_cert_fingerprints":
+    ["91:55:3E:03:2A:17:9D:8A:FB:E6:13:CB:51:78:FB:98:C7:D8:44:EA:8E:2E:79:40:47:B7:69:D3:C4:14:51:9A"]
+  }
+}]
