@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     android:targetSandboxVersion="2"
-    package="com.google.ar.sceneform.samples.videotexture"
+    package="com.nextechar.holograms"
     xmlns:dist="http://schemas.android.com/apk/distribution">
 
     <!-- Always needed for AR. -->
@@ -34,6 +34,9 @@
         <meta-data
             android:name="com.google.ar.core"
             android:value="required" />
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
 
         <activity
             android:name=".MainActivity"
@@ -46,16 +49,16 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter>
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="http"
+                    android:scheme="https"
                     android:host="holograms.nextechar.com"
-                    android:pathPattern="/x?.*" />
+                    android:pathPattern="/x=.*/.*" />
             </intent-filter>
         </activity>
     </application>

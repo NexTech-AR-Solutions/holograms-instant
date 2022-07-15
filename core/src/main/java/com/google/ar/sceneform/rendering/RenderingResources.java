@@ -43,7 +43,7 @@ final class RenderingResources {
       case PLANE_MATERIAL:
         return LoadHelper.rawResourceNameToIdentifier(context, "sceneform_plane_material");
       case PLANE:
-        return LoadHelper.drawableResourceNameToIdentifier(context, "sceneform_plane");
+        return LoadHelper.drawableResourceNameToIdentifier(context, "holox_plane");
       case VIEW_RENDERABLE_MATERIAL:
         return LoadHelper.rawResourceNameToIdentifier(context, "sceneform_view_material");
     }

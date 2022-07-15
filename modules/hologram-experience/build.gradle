@@ -8,7 +8,7 @@ plugins {
 android {
     compileSdkVersion 31
     defaultConfig {
-        applicationId "com.google.ar.sceneform.samples.videotexture"
+        applicationId "com.nextechar.holograms"
 
         // Sceneform requires minSdkVersion >= 24.
         minSdkVersion rootProject.ext.minSdkVersion
@@ -32,6 +32,14 @@ android {
 }
 
 dependencies {
+
+    // OkHTTP
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+
+    // Picasso
+    implementation 'com.squareup.picasso:picasso:2.8'
+    implementation 'jp.wasabeef:picasso-transformations:2.4.0'
+
     implementation "com.google.android.gms:play-services-instantapps:17.0.0"
 
     implementation "androidx.appcompat:appcompat:$appcompat_version"
