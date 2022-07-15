@@ -597,8 +597,10 @@ public abstract class BaseArFragment extends Fragment
                             // If the selection visualizer already has a footprint renderable, then it was set to
                             // something custom. Don't override the custom visual.
                             if (selectionVisualizer.getFootprintRenderable() == null) {
-                                selectionVisualizer.setFootprintRenderable(renderable);
+                                // Disable Selection Visual for instant experiences
+                                //selectionVisualizer.setFootprintRenderable(renderable);
                             }
+
                         })
                 .exceptionally(
                         throwable -> {

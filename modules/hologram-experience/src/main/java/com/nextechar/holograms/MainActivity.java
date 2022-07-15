@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements
 
         Picasso.get()
                 .load(Uri.parse(profileUriString))
-                .transform(new CropCircleTransformation())
+                .transform(new HologramsCropCircleTransformation())
                 .placeholder(R.drawable.profile_placeholder)
                 .error(R.drawable.profile_placeholder)
                 .into(profileImage);
